@@ -1,60 +1,94 @@
 //
 //  ViewController.swift
-//  FakeIGLoginApp
+//  TimerApp
 //
-//  Created by Jumpei Takeshita on 2020/03/13.
+//  Created by Jumpei Takeshita on 2020/03/12.
 //  Copyright © 2020 Jumpei Takeshita. All rights reserved.
 //
 
 import UIKit
 
-class ViewController: UIViewController, UITextFieldDelegate {
+class ViewController: UIViewController {
 
-    @IBOutlet weak var logoImageView: UIImageView!
     
-    @IBOutlet weak var idTextField: UITextField!
+    @IBOutlet weak var imageView: UIImageView!
     
-    @IBOutlet weak var pwTextField: UITextField!
+    @IBOutlet weak var startButton: UIButton!
     
-    @IBOutlet weak var usernameLabel: UILabel!
+    @IBOutlet weak var stopButton: UIButton!
     
-    @IBOutlet weak var passwordLabel: UILabel!
+    //setting timer varibable
+    var timer = Timer()
     
+    //setting count variable
+    var count = Int()
+    
+    //setting array to store the images will be appeard in imageView
+    var imageArray = [UIImage]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //setting up UITextField's protocol to each of textfield
-        idTextField.delegate = self
-        pwTextField.delegate = self
+        count = 0
         
-    }
-
-    @IBAction func loginButton(_ sender: Any) {
+        //inactivate the stopbutton at first
+        stopButton.isEnabled = false
         
-        //change image in logoImageView to another one
-        logoImageView.image = UIImage(named: "loginOK")
+        for i in 0..<5{
+            let image = UIImage(named: "\(i)")
+            imageArray.append(image!)
+            
+        }
         
-        //what is typed in each textField will be reflected to each label down below
-        usernameLabel.text = idTextField.text
-        passwordLabel.text = pwTextField.text
-        
-        //remove keyboard when loginButton is pressed
-        //idTextField.endEditing(true)
-        //pwTextField.endEditing(true)
+        imageView.image = UIImage(named: "0")
         
     }
     
-    //move keyboard away when return button is pressed
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
+
+    func startTimer(){
+        
+        //start timer and call timerUpdate method per 0.2 seconds
+        timer = Timer.scheduledTimer(timeInterval: 0.2, target: self, selector: #selector(timerUpdate), userInfo: nil, repeats: true)
+        
+    }
+    
+    //method will be called in startTimer method
+    @objc func timerUpdate(){
+        
+        //count will increse 1 by 1
+        count += 1
+        
+        //loop while number is less than 4
+        if count > 4 {
+            count = 0
+        }else{
+            //extract images out of imageArray and putting them into imageView.image
+            imageView.image = imageArray[count]
+        }
+        
     }
 
-    //move keyboard away when the screen other than keyboard is touched
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        view.endEditing(true)
+    @IBAction func start(_ sender: Any) {
+        
+        //reflect image to imageView
+        startTimer()
+        //inactivate the startbutton
+        startButton.isEnabled = false
+        stopButton.isEnabled = true
     }
+    
+    @IBAction func stop(_ sender: Any) {
+        
+        //stop imageView
+        
+        //activate startbutton
+        startButton.isEnabled = true
+        stopButton.isEnabled = false
+        
+        //inactivate the stopbutton
+        timer.invalidate()
+        
+    }
+    
 }
-
 
